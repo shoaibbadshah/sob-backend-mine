@@ -12,13 +12,7 @@ This project will run on **NodeJs** using **MongoDB** as database. I had tried t
 
 ## Advertise for Job/Work Contract
 
-I am open for a good job or work contract. You can contact me directly on my email ([maitraysuthar@gmail.com](mailto:maitraysuthar@gmail.com "maitraysuthar@gmail.com")) or you can download my CV from my personal [website](https://maitraysuthar.github.io/portfolio/).
-
-## Buy me a Coffee
-
-If you consider my project as helpful stuff, You can appreciate me or my hard work and time spent to create this helpful structure with buying me a coffee.
-
-<a href="https://www.buymeacoffee.com/36GgOoQ2f" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+I am open for a good job or work contract. You can contact me directly on my email ([awais.hameedrana1@gmail.com](mailto:awais.hameedrana1@gmail.com "awais.hameedrana1@gmail.com")) .
 
 ## Features
 
@@ -32,10 +26,6 @@ If you consider my project as helpful stuff, You can appreciate me or my hard wo
 - Validations added.
 - Included API collection for Postman.
 - Light-weight project.
-- Test cases with [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
-- Code coverage with [Istanbuljs (nyc)](https://istanbul.js.org/).
-- Included CI (Continuous Integration) with [Travis CI](https://travis-ci.org).
-- Linting with [Eslint](https://eslint.org/).
 
 ## Software Requirements
 
@@ -49,7 +39,7 @@ If you consider my project as helpful stuff, You can appreciate me or my hard wo
 1.  Clone the project from github. Change "myproject" to your project name.
 
 ```bash
-git clone https://github.com/maitraysuthar/rest-api-nodejs-mongodb.git ./myproject
+# git clone https://github.com/maitraysuthar/rest-api-nodejs-mongodb.git ./myproject
 ```
 
 ### Using manual download ZIP
