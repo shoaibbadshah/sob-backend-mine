@@ -5,6 +5,7 @@ const apiResponse = require("../helpers/apiResponse");
 const utils = require("../utils");
 const Stripe_Key =
   "sk_test_51NzdazEpmwbQ6obrawf4t4FOHCyEGleWBhptH64qUwoRMC6fCoVOuXOhhVjk4OGm2UHnYvLFLEjEglqxi6fKGYYi007jsrSkCg";
+const jwtPrivateKey = "@#$&distr!!!ibutor-key**)&%$";
 const stripe = require("stripe")(Stripe_Key);
 
 const jwt = require("jsonwebtoken");
@@ -16,10 +17,7 @@ exports.StripePay = async (req, res) => {
     if (authHeader) {
       const token = authHeader.split(" ")[1];
       try {
-        const decodedToken = utils.decodeAuthToken(
-          token,
-          process.env.jwtPrivateKey
-        );
+        const decodedToken = utils.decodeAuthToken(token, jwtPrivateKey);
       } catch (error) {
         return res.status(400).send({ message: "unauthorized" });
       }

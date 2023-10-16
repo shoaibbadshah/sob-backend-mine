@@ -4,6 +4,8 @@ const User = require("../models/UserModel");
 const apiResponse = require("../helpers/apiResponse");
 const utils = require("../utils");
 const jwt = require("jsonwebtoken");
+const JWT_SECRET = "bezkoder-secret-key";
+const jwtPrivateKey = "@#$&distr!!!ibutor-key**)&%$";
 
 (exports.register = async (req, res) => {
   try {
@@ -12,7 +14,7 @@ const jwt = require("jsonwebtoken");
     if (existingUser) {
       const token = await utils.generateAuthToken(
         existingUser._id,
-        process.env.jwtPrivateKey
+        jwtPrivateKey
       );
       return apiResponse.successResponseWithData(res, "", token);
     }
@@ -20,10 +22,7 @@ const jwt = require("jsonwebtoken");
     const user = new User({ email });
 
     await user.save();
-    const token = await utils.generateAuthToken(
-      user._id,
-      process.env.jwtPrivateKey
-    );
+    const token = await utils.generateAuthToken(user._id, jwtPrivateKey);
 
     // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     //   if (err) {
@@ -59,7 +58,7 @@ const jwt = require("jsonwebtoken");
     try {
       const { token } = req.body;
 
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
           return apiResponse.ErrorResponse(res, "Invalid token " + err);
         }

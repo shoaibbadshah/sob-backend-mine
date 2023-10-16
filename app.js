@@ -31,7 +31,9 @@ require("./routes/auth")(app);
 
 app.use("/api/payment", require("./routes/payment"));
 
-const MONGODB_URL = process.env.MONGODB_URL;
+// const MONGODB_URL = process.env.MONGODB_URL || ;
+const MONGODB_URL =
+  "mongodb+srv://schoolofBitCoin:schoolofBitCoin@schoolbitcoin.y1n5fcl.mongodb.net/";
 db.mongoose
   .connect(MONGODB_URL, {
     useNewUrlParser: true,
@@ -47,7 +49,10 @@ db.mongoose
     process.exit();
   });
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to application." });
+  res.send({ message: "Welcome to application." });
+});
+app.get("/hello", (req, res) => {
+  res.send("Hello, Firebase!");
 });
 
 const PORT = process.env.PORT || 8080;
