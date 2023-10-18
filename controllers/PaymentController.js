@@ -3,6 +3,7 @@ const User = require("../models/UserModel");
 //helper file to prepare responses.
 const apiResponse = require("../helpers/apiResponse");
 const utils = require("../utils");
+const axios = require("axios");
 const Stripe_Key =
   "sk_test_51NzdazEpmwbQ6obrawf4t4FOHCyEGleWBhptH64qUwoRMC6fCoVOuXOhhVjk4OGm2UHnYvLFLEjEglqxi6fKGYYi007jsrSkCg";
 const stripe = require("stripe")(Stripe_Key);
@@ -48,5 +49,29 @@ exports.StripePay = async (req, res) => {
     });
   } catch (error) {
     apiResponse.ErrorResponse(res, error);
+  }
+};
+exports.BtcPay = async (req, res) => {
+  try {
+    const SERVER_URL = "https://btcpay0.voltageapp.io";
+    const API_KEY = "GoOrvU7QEv7ii07kiZE717kbOQEd7okkGvd0W0oGp7E";
+    const response = await axios.post(
+      `${SERVER_URL}/invoices`,
+      {
+        price: 10, // Amount in satoshis
+        currency: "BTC",
+      },
+      {
+        headers: {
+          Authorization: `Basic R29PcnZVN1FFdjdpaTA3a2laRTcxN2tiT1FFZDdva2tHdmQwVzBvR3A3RQ==`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json({ invoice: response.data.data });
+  } catch (error) {
+    console.error("Error creating invoice:", error.response);
+    res.status(401).json({ error: "Error creating invoice" });
   }
 };
