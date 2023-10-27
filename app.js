@@ -28,8 +28,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 require("./middlewares/passport.middleware");
 
-require("./routes/auth")(app);
+// require("./routes/auth")(app);
 
+app.use("/", require("./routes/auth"));
 app.use("/api/payment", require("./routes/payment"));
 
 const MONGODB_URL = process.env.MONGODB_URL;

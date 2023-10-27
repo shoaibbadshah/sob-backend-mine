@@ -78,7 +78,7 @@ exports.StripePayproceed = async (req, res) => {
         paymentIntentq
       );
 
-      if (paymentIntent?.status === "succeeded") {
+      if (paymentIntent.status === "succeeded") {
         user.isPaid = true;
         await user.save();
         return apiResponse.successResponseWithData(res, "Success", {
@@ -126,7 +126,7 @@ exports.BtcPay = async (req, res) => {
         price: 10, // Amount in satoshis
         currency: "USD",
         metadata: {
-          user_id: user?._id, // User's unique identifier
+          user_id: user._id, // User's unique identifier
         },
       },
       {

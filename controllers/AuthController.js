@@ -49,7 +49,7 @@ const nodemailer = require("nodemailer");
             return apiResponse.ErrorResponse(res, "Invalid token " + err);
           } else {
             return apiResponse.successResponseWithData(res, "Success", {
-              userID: decoded?._id,
+              userID: decoded._id,
               token: token,
             });
           }
