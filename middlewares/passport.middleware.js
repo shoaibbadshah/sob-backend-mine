@@ -35,7 +35,7 @@ passport.use(
 
 const requireRole = (_id) => {
   return (req, res, next) => {
-    if (req.user.roles.includes(role)) {
+    if (req.user.roles.includes(_id)) {
       return next();
     }
     return res.status(401).send("Unauthorized");
