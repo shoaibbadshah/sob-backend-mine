@@ -10,7 +10,9 @@ const router = express.Router();
 // router.use(passport.authenticate("jwt", { session: false }));
 
 router.post("/StripePay", StripeController.StripePay);
+router.get("/StripePayProceed", StripeController.StripePayproceed);
 router.post("/create-invoice", StripeController.BtcPay);
+router.post("/btcPay_webhook", StripeController.BtcPayWebHook);
 // router.post('/confirm_intent',paymentsController.confirm_intent)
 
 module.exports = router;

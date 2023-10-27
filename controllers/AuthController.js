@@ -4,7 +4,7 @@ const User = require("../models/UserModel");
 const apiResponse = require("../helpers/apiResponse");
 const utils = require("../utils");
 const jwt = require("jsonwebtoken");
-
+const nodemailer = require("nodemailer");
 (exports.register = async (req, res) => {
   try {
     const { email } = req.body;
@@ -14,6 +14,8 @@ const jwt = require("jsonwebtoken");
         existingUser._id,
         process.env.jwtPrivateKey
       );
+      const emailResp = await utils.sendMail(email, token);
+
       return apiResponse.successResponseWithData(res, "", token);
     }
 
@@ -25,49 +27,36 @@ const jwt = require("jsonwebtoken");
       process.env.jwtPrivateKey
     );
 
-    // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    //   if (err) {
-    //     return apiResponse.ErrorResponse(res, "Invalid token " + err);
-    //   }
-    // });
-
-    // Generate a JWT with a 2-hour expiration time
-    // const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-    //   expiresIn: "2h",
-    // });
-
-    // const mailOptions = {
-    //   from: process.env.EMAIL_USER,
-    //   to: email,
-    //   subject: 'One-Time Login Token',
-    //   text: `Your one-time login token is: ${token}`,
-    // };
-
-    // await transporter.sendMail(mailOptions);
+    await utils.sendMail(email, token);
 
     return apiResponse.successResponseWithData(
       res,
-      "Token sent to your email",
-      token
+      "Token sent to your email"
+      // token
     );
   } catch (err) {
-    //throw error in json response with status 500.
     return apiResponse.ErrorResponse(res, err);
   }
 }),
   (exports.login = async (req, res) => {
     try {
       const { token } = req.body;
+      console.log("🚀 ~ file: AuthController.js:61 ~ token:", token);
 
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-          return apiResponse.ErrorResponse(res, "Invalid token " + err);
-        }
-
-        // You can implement user authentication logic here
-        // For simplicity, we'll just return a success message
-        return apiResponse.successResponseWithData(res, "Success", decoded);
-      });
+      try {
+        jwt.verify(token, process.env.jwtPrivateKey, (err, decoded) => {
+          if (err) {
+            return apiResponse.ErrorResponse(res, "Invalid token " + err);
+          } else {
+            return apiResponse.successResponseWithData(res, "Success", {
+              userID: decoded?._id,
+              token: token,
+            });
+          }
+        });
+      } catch (error) {
+        return res.status(400).send({ message: "unauthorized" });
+      }
     } catch (error) {
       console.error(error);
       apiResponse.ErrorResponse(res, "Error", error);
