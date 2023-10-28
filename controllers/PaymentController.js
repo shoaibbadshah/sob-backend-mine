@@ -123,10 +123,10 @@ exports.BtcPay = async (req, res) => {
     const response = await axios.post(
       `${SERVER_URL}/invoices`,
       {
-        price: 10, // Amount in satoshis
+        price: 0.000001, // Amount in satoshis
         currency: "USD",
         metadata: {
-          user_id: user._id, // User's unique identifier
+          orderId: user._id, // User's unique identifier
         },
       },
       {
@@ -150,13 +150,13 @@ exports.BtcPayWebHook = async (req, res) => {
       "🚀 ~ file: PaymentController.js:149 ~ exports.BtcPayWebHook= ~ event:",
       event
     );
-    const userId = event.invoice.metadata.user_id;
+    const userId = event.invoice.metadata.orderId;
     console.log(
       "🚀 ~ file: PaymentController.js:150 ~ exports.BtcPayWebHook= ~ userId:",
       userId
     );
-    if (event.type === "invoice_payment_received") {
-      const userId = event.invoice.metadata.user_id;
+    if (event.type === "InvoiceSettled") {
+      const userId = event.invoice.metadata.orderId;
       console.log(
         "🚀 ~ file: PaymentController.js:156 ~ exports.BtcPayWebHook= ~ userId:",
         userId
@@ -167,7 +167,7 @@ exports.BtcPayWebHook = async (req, res) => {
 
     res.status(200).end();
   } catch (error) {
-    console.error("Error creating invoice:", error.response);
+    console.error("Error creating invoice:", error);
     res.status(401).json({ error: "Error creating invoice" });
   }
 };
