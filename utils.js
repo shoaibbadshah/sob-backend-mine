@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 module.exports.generateAuthToken = (id, key) => {
   const options = {
     expiresIn: "1h", // Set the expiration time (e.g., 1 hour)
@@ -28,36 +29,92 @@ module.exports.encodeBase64 = (str) => {
 };
 
 module.exports.sendMail = async (to, token) => {
-  console.log(
-    "🚀 ~ file: utils.js:28 ~ module.exports.sendMail= ~ token:",
-    token
-  );
-  const transporter = nodemailer.createTransport({
-    host: "smtp.titan.email",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "info@schoolofbitcoin.shop",
-      pass: "HeerR5nkBddw2uF@",
-    },
-  });
+  // console.log("🚀 ~ file: utils.js:28 ~ module.exports.sendMail= ~ token:", to);
+  // const transporter = nodemailer.createTransport({
+  //   // host: "smtp.titan.email",
+  //   // port: 465,
+  //   // secure: true,
+  //   service: "gmail",
+  //   auth: {
+  //     user: "thebadshahsir@gmail.com",
+  //     // pass: "HeerR5nkBddw2uF@",
+  //     pass: "Asedking123@",
+  //   },
+  // });
+
   const html = await this.loginEmailTemplate(token);
-
   const mailOptions = {
-    from: "info@schoolofbitcoin.shop",
-    to: "jstalin702@gmail.com",
+    from: "thebadshahsir@gmail.com",
+    to: to,
     subject: "Your Login Link - Access Your Account Now",
-
+    // text: 'Hi, this is a test email',
     html: html,
   };
 
+  // let emailTransporter = await this.createTransporter();
+  // await emailTransporter.sendMail(mailOptions);
+
+  // const mailOptions = {
+  //   from: "thebadshahsir@gmail.com",
+  //   to: to,
+  //   subject: "Your Login Link - Access Your Account Now",
+
+  //   html: html,
+  // };
+
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
+    // const info = await transporter.sendMail(mailOptions);
+    // console.log("Email sent:", info.response);
+    let emailTransporter = await this.createTransporter();
+    const info = await emailTransporter.sendMail(mailOptions);
+
     return info.response;
   } catch (error) {
     console.error("Error sending email:", error);
     return error;
+  }
+};
+module.exports.createTransporter = async () => {
+  const OAuth2 = google.auth.OAuth2;
+
+  try {
+    const oauth2Client = new OAuth2(
+      "283801907519-h5vcbg860ipcc65lgl88mfoc7gho1kdf.apps.googleusercontent.com",
+      "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",
+      "https://developers.google.com/oauthplayground"
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        "1//04TekW4FMTqizCgYIARAAGAQSNwF-L9Ir3DMjsYh5-eh1iMPVb7wz9HhWkFTA44TsF1xUnKkAKhOyaqvwWRh4aftmz3aRLkxLEgM",
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          console.log("*ERR: ", err);
+          reject();
+        }
+        resolve(token);
+      });
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: "thebadshahsir@gmail.com",
+        accessToken,
+        clientId:
+          "283801907519-h5vcbg860ipcc65lgl88mfoc7gho1kdf.apps.googleusercontent.com",
+        clientSecret: "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",
+        refreshToken:
+          "1//04TekW4FMTqizCgYIARAAGAQSNwF-L9Ir3DMjsYh5-eh1iMPVb7wz9HhWkFTA44TsF1xUnKkAKhOyaqvwWRh4aftmz3aRLkxLEgM",
+      },
+    });
+    return transporter;
+  } catch (err) {
+    return err;
   }
 };
 module.exports.loginEmailTemplate = async (token) => {
@@ -286,9 +343,9 @@ module.exports.loginEmailTemplate = async (token) => {
   
                               <!--[if mso]><style>.v-button {background: transparent;}</style><![endif]-->
                               <div align="center">
-                                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href=http://localhost:3000/login?token=${token}
+                                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href=https://sob-frontend.onrender.com?token=${token}
                                 } style="height:46px; v-text-anchor:middle; width:134px;" arcsize="8.5%"  stroke="f" fillcolor="#ffc000"><w:anchorlock/><center style="color:#000000;"><![endif]-->
-                                <a href=http://localhost:3000/login?token=${token}
+                                <a href=https://sob-frontend.onrender.com?token=${token}
                                 } target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;text-align: center;color: #000000; background-color: #ffc000; border-radius: 4px;  width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; font-size: 14px;">
                                   <span style="display:block;padding:14px 44px 13px;line-height:120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong><span style="line-height: 19.2px; font-size: 16px;">LOGIN</span></strong>
                                   </span>

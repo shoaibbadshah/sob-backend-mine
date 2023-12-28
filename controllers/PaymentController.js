@@ -71,7 +71,7 @@ exports.StripePayproceed = async (req, res) => {
 
     const paymentIntentq = req.query.payment_intent;
     const clientSecret = req.query.payment_intent_client_secret;
-    const redirectStatus = req.query.redirect_status;
+    const redirectStatus = req.query.redirect_status; //pi_3OSNrCEpmwbQ6obr1MikYPZo
 
     try {
       const paymentIntent = await stripe.paymentIntents.retrieve(
