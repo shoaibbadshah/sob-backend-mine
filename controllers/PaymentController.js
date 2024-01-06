@@ -19,33 +19,113 @@ exports.StripePay = async (req, res) => {
       const token = authHeader.split(" ")[1];
 
       try {
-        jwt.verify(token, process.env.jwtPrivateKey, (err, decoded) => {
+        jwt.verify(token, process.env.jwtPrivateKey, async (err, decoded) => {
           if (err) {
             return apiResponse.ErrorResponse(res, "Invalid token " + err);
           } else {
             userID = decoded._id;
+            if (userID) {
+              const paymentIntent = await stripe.paymentIntents.create({
+                amount: 1000, // Amount in cents
+                currency: "usd",
+                // Add more options as needed
+              });
+
+              const user = await User.findOne({ _id: userID });
+
+              return apiResponse.successResponseWithData(res, "Success", {
+                clientSecret: paymentIntent.client_secret,
+                user: user,
+              });
+            }
           }
         });
       } catch (error) {
         return res.status(400).send({ message: "unauthorized" });
       }
     }
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 1000, // Amount in cents
-      currency: "usd",
-      // Add more options as needed
-    });
-
-    const user = await User.findOne({ _id: userID });
-
-    return apiResponse.successResponseWithData(res, "Success", {
-      clientSecret: paymentIntent.client_secret,
-      user: user,
-    });
   } catch (error) {
     apiResponse.ErrorResponse(res, error);
   }
+};
+
+//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NThmMWNkOGIzMjA5ZjAwNDMwNjkwZjIiLCJpYXQiOjE3MDQzNzM4MTIsImV4cCI6MTcwNDM3NzQxMn0.t-KUAqiLyFkZWQJxxsoDqT8g8tmmDiA7j2fsshhISMQ"
+exports.StripeSubScrip = async (req, res) => {
+  const { amount, paymentMethod } = req.body;
+
+  const authHeader = req.headers.authorization;
+  let userID = "";
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+
+    try {
+      jwt.verify(token, process.env.jwtPrivateKey, async (err, decoded) => {
+        if (err) {
+          return apiResponse.validationErrorWithData(res, "Invalid token");
+        } else {
+          userID = decoded._id;
+          if (userID) {
+            const user = await User.findOne({ _id: userID });
+            console.log(
+              "🚀 ~ file: PaymentController.js:71 ~ exports.StripeSubScrip= ~ user:",
+              user
+            );
+            try {
+              const paymentIntent = await stripe.paymentIntents.create({
+                amount,
+                currency: "usd",
+                payment_method: paymentMethod,
+                confirm: true,
+                return_url: "http://localhost:3000/",
+              });
+
+              // const payment = new Payment({
+              //   amount: paymentIntent.amount,
+              //   currency: paymentIntent.currency,
+              //   paymentMethod: paymentIntent.payment_method,
+              // });
+
+              if (paymentIntent?.status === "succeeded") {
+                user.isPaid = true;
+                await user.save();
+                // return apiResponse.successResponseWithData(res, "Success", {
+                //   clientSecret: "successfully  ",
+                // });
+              }
+
+              // await payment.save();
+              apiResponse.successResponseWithData(res, null, paymentIntent);
+            } catch (error) {
+              console.log(
+                "🚀 ~ file: PaymentController.js:99 ~ jwt.verify ~ error:",
+                error
+              );
+              if (error.code === "card_declined") {
+                // Handle specific payment failure scenario
+                // return res
+                //   .status(400)
+                //   .json({ success: false, error: "Insufficient funds" });
+                return apiResponse.validationErrorWithData(
+                  res,
+                  "Insufficient funds"
+                );
+              }
+            }
+          } else {
+            return res.status(400).send({ message: "unauthorized" });
+          }
+        }
+      });
+    } catch (error) {
+      return res.status(400).send({ message: "unauthorized" });
+    }
+  }
+  // res.json({ success: true, paymentIntent });
+  // } catch (error) {
+  //   console.error(error);
+  //   // res.status(500).json({ success: false, error: error.message });
+  //   apiResponse.validationErrorWithData(res, "Invalid token");
+  // }
 };
 exports.StripePayproceed = async (req, res) => {
   try {
